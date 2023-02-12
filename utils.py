@@ -1,4 +1,4 @@
-import customtkinter
+import customtkinter,datetime
 import re,json,time,mysql.connector
 
 mydb = mysql.connector.connect(
@@ -40,4 +40,11 @@ def update_time(time_label:customtkinter.CTkLabel):
     t = time.localtime()
     current_time = time.strftime("%H:%M:%S", t)
     time_label.configure(text=f"{current_time} IST")
-    time_label.after(1000,update_time)
+    time_label.after(1000,lambda : update_time(time_label)) 
+
+def total_attendace(data,current_user):
+    a = data["users"][current_user]["attendance"]
+    
+    total_days = (datetime.date(datetime.datetime.now().year,datetime.datetime.now().month+1,1)-datetime.date(datetime.datetime.now().year,datetime.datetime.now().month,1)).days
+    
+    return round((a[datetime.datetime.now().month-1]/total_days)*100,1)

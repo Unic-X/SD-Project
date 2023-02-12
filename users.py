@@ -6,10 +6,10 @@ matplotlib.use('TkAgg')
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
+os.chdir("assets/")
+
 with open("users.json","r+") as file:
     data = json.load(file)
-
-os.chdir("assets/")
 
 class Users:
     def check_login(self,frame):
@@ -142,7 +142,7 @@ class Users:
         percentage.grid(row=1,column=1,sticky="new")
 
         #Details
-        percentage_label = customtkinter.CTkLabel(master=percentage,text=f"50%",font=self.text_font_bold)
+        percentage_label = customtkinter.CTkLabel(master=percentage,text=f"{total_attendace(data,self.username)}",font=self.text_font_bold)
         percentage_label.place(relx=0.1,rely=0.1)
         percentage_label_ = customtkinter.CTkLabel(master=percentage,text="Attendance %",font=self.text_font)
         percentage_label_.place(relx=0.1,rely=0.25)
@@ -154,15 +154,20 @@ class Users:
         #Details
         time_label = customtkinter.CTkLabel(master=time,text="",font=self.text_font_bold)
         time_label.place(relx=0.1,rely=0.1)
+        update_time(time_label)
         current_time_label = customtkinter.CTkLabel(master=time,text="Current Time",font=self.text_font)
         current_time_label.place(relx=0.1,rely=0.25)
 
+        basic = int(data["users"][self.username]["basic"])
+        taxable = basic+basic*0.792
+        net_pay = (basic+basic*0.792)-(taxable*0.3+basic*0.06)
+        print(net_pay)
         #Late Frame Right most
         total_pay_f = customtkinter.CTkFrame(master=self.r_frame,fg_color="#e85832",corner_radius=0)
         total_pay_f.grid(row=1,column=3,sticky="new")
 
 
-        total_pay = customtkinter.CTkLabel(master=total_pay_f,text=f"₹{50*(100000)/100}",font=self.text_font_bold)
+        total_pay = customtkinter.CTkLabel(master=total_pay_f,text=f"₹{net_pay}",font=self.text_font_bold)
         total_pay.place(relx=0.1,rely=0.1)
         total_pay_ = customtkinter.CTkLabel(master=total_pay_f,text="Monthly Total Pay",font=self.text_font)
         total_pay_.place(relx=0.1,rely=0.25)
@@ -197,11 +202,12 @@ class Users:
         ax.tick_params(axis='x', colors='white')
         ax.yaxis.label.set_color('white')
         ax.tick_params(axis='y', colors='white')
-        data = (20, 35, 30, 15, 27,20,20,30,19,18,27,17,10)
-        ind = numpy.arange(len(data))  # the x locations for the groups
+        print(tuple(data["users"][self.username]["attendance"]))
+        data_ = tuple(data["users"][self.username]["attendance"])
+        ind = numpy.arange(len(data_))  # the x locations for the groups
         width = .75
-
-        rects1 = ax.bar(ind, data, width)
+        ax.set_xticklabels(["January", "February", 'March', "April", "May", 'June', "July", "August", "September", "October", 'November' , "December"])
+        rects1 = ax.bar(ind, data_, width)
 
         canvas = FigureCanvasTkAgg(f, master=attendance_graph)
         canvas.draw()
@@ -296,7 +302,6 @@ class Admin(Users):
             if choice=="1" and int(current_basic.cget("text"))<10000:
                 change_basic.configure(textvariable=10000)
 
-                
 
         def option_callback(choice):
             username = data["users"][choice]["name"]
@@ -322,6 +327,31 @@ class Admin(Users):
                                                     values=[username for username in data["users"].keys()],command=option_callback)
 
         list_users.place(x=30,y=50)
+
+        def save_changes():
+            employeeid = list_users.get()
+            new_basic = int(change_basic.get())
+            data["users"][employeeid]["basic"]=new_basic
+            with open("users.json","w") as file:
+                json.dump(data,file,indent=4)
+            option_callback(employeeid)
+
+        def confirmation_window():
+
+            new_window = customtkinter.CTkToplevel()
+
+            new_window.title("Confirm Changes")
+            new_window.geometry("400x240")
+            new_window.protocol("WM_DELETE_WINDOW", lambda: ...)
+
+
+            new_window.resizable(width=False,height=False)
+            warning_label = customtkinter.CTkLabel(master=new_window,text="Changes are being finalized \n please confirm the changes to continue",height=40)
+            warning_label.place(relx=0.22,rely=0.25)
+            cancel_changes = customtkinter.CTkButton(master=new_window,text="Cancel Changes",command=lambda :new_window.destroy())
+            accept_changes = customtkinter.CTkButton(master=new_window,text="Accept Changes",command=save_changes)
+            cancel_changes.place(relx=0.15,rely=0.5)
+            accept_changes.place(relx=0.55,rely=0.5)
 
 
         #ACC NUMBER
@@ -420,28 +450,10 @@ class Admin(Users):
         net_salary= customtkinter.CTkLabel(master=manage_users_frame,text="0",font=font)
         net_salary.place(x=280,y=440)
 
-        save_button = customtkinter.CTkButton(master=manage_users_frame,text="Save Changes",font=font,fg_color="#4b873a",command=lambda : self.confirmation_window())
+        save_button = customtkinter.CTkButton(master=manage_users_frame,text="Save Changes",font=font,fg_color="#4b873a",command=lambda : confirmation_window())
         save_button.place(x=440,y=440)
 
         self.window.mainloop()
-    def confirmation_window(self):
-        
-        def disable_event():
-            pass
-        new_window = customtkinter.CTkToplevel()
-        
-        new_window.title("Confirm Changes")
-        new_window.geometry("400x240")
-        new_window.protocol("WM_DELETE_WINDOW", disable_event)
-
-
-        new_window.resizable(width=False,height=False)
-        warning_label = customtkinter.CTkLabel(master=new_window,text="Changes are being finalized \n please confirm the changes to continue",height=40)
-        warning_label.place(relx=0.22,rely=0.25)
-        cancel_changes = customtkinter.CTkButton(master=new_window,text="Cancel Changes")
-        accept_changes = customtkinter.CTkButton(master=new_window,text="Accept Changes")
-        cancel_changes.place(relx=0.15,rely=0.5)
-        accept_changes.place(relx=0.55,rely=0.5)
-
+    
 user = Users()
 user.login_page()

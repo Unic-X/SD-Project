@@ -1,0 +1,65 @@
+{
+    "current_user": "arman22102",
+    "users": {
+        "arman22102": {
+            "name": "Arman",
+            "password": "arman22012",
+            "attendance": [
+                31,
+                15,
+                17,
+                28,
+                19,
+                18,
+                25,
+                24,
+                25,
+                26,
+                0,
+                0
+            ],
+            "isadmin": false,
+            "acc": 673021663259,
+            "basic": 40000
+        },
+        "user1": {
+            "name": "Bajrang",
+            "password": "user123",
+            "attendance": [
+                31,
+                15,
+                17,
+                23,
+                19,
+                18,
+                25,
+                24,
+                25,
+                26,
+                0,
+                0
+            ],
+            "isadmin": true,
+            "acc": 313091178639,
+            "basic": 25000
+        },
+        "user3": {
+            "name": "Alo",
+            "password": "user",
+            "attendance": [
+                1,
+                2,
+                3,
+                2,
+                3,
+                1,
+                1,
+                3,
+                2
+            ],
+            "isadmin": false,
+            "acc": 554936055727,
+            "basic": 40000
+        }
+    }
+}
