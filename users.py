@@ -171,6 +171,22 @@ class Users:
         total_pay.place(relx=0.1,rely=0.1)
         total_pay_ = customtkinter.CTkLabel(master=total_pay_f,text="Monthly Total Pay",font=self.text_font)
         total_pay_.place(relx=0.1,rely=0.25)
+
+        details = customtkinter.CTkFrame(master=self.r_frame)
+        details.grid(row=2,column=0,sticky="nsew",rowspan=4,columnspan=4)
+
+        name_account = customtkinter.CTkLabel(details,width=2000,bg_color="#474545",text="Name: {}     Account Number:{}".format(data["users"][self.username]["name"],data["users"][self.username]["acc"]),anchor="w",font=self.text_font)
+        name_account.place(x=0,y=40)
+        name_account.configure(padx=40)
+
+        total_deduction = customtkinter.CTkLabel(details,font=self.text_font,text="Total Monthly Deduction: {}      Basic Pay: {}".format(taxable*0.3+basic*0.06,basic),anchor="w")
+        total_deduction.place(x=0,y=100)
+        total_deduction.configure(padx=40)
+
+        total_allowance = customtkinter.CTkLabel(details,font=self.text_font,text="Total Monthly Allowance(Including DA): {}      Perks: {}".format(basic*0.38,basic*0.412),anchor="w")
+        total_allowance.place(x=0,y=140)
+        total_allowance.configure(padx=40)
+
         if i==0:
             self.window.mainloop()
 
