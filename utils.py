@@ -1,26 +1,9 @@
 import customtkinter,datetime
-import re,json,time,mysql.connector
-
-mydb = mysql.connector.connect(
-  host="localhost",
-  port = "1234",
-  user="admin",
-  password="arman",
-  database = "samaj"
-)
-
-cursor = mydb.cursor()
+import re,json,time
 
 def read_file(f:str):
     with open(f,"r+") as file:
         return json.load(file)
-
-def find_password(userid:str)->str:
-    cursor.execute("USE samaj;")
-    cursor.execute(f"SELECT PASSWORD FROM USER WHERE ID={userid}")
-    password = cursor.fetchone()
-    return password
-    
 
 
 """def check_login(l_frame,frame:CT.CTkEntry,username_entry:str): # must contain "pentry" textbox 

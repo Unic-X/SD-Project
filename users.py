@@ -11,6 +11,8 @@ os.chdir("assets/")
 with open("users.json","r+") as file:
     data = json.load(file)
 
+customtkinter.set_default_color_theme("green")
+
 class Users:
     def check_login(self,frame):
         username = frame.uentry.get().strip()
@@ -344,13 +346,16 @@ class Admin(Users):
 
         list_users.place(x=30,y=50)
 
-        def save_changes():
+        def save_changes(i=0):
             employeeid = list_users.get()
-            new_basic = int(change_basic.get())
-            data["users"][employeeid]["basic"]=new_basic
+            if i==0:
+                new_basic = int(change_basic.get())
+                data["users"][employeeid]["basic"]=new_basic
+            else:
+                data["users"].pop(employeeid)
             with open("users.json","w") as file:
-                json.dump(data,file,indent=4)
-            option_callback(employeeid)
+                    json.dump(data,file,indent=4)
+            list_users.configure(values=[username for username in data["users"].keys()])
 
         def confirmation_window():
 
@@ -469,7 +474,76 @@ class Admin(Users):
         save_button = customtkinter.CTkButton(master=manage_users_frame,text="Save Changes",font=font,fg_color="#4b873a",command=lambda : confirmation_window())
         save_button.place(x=440,y=440)
 
+        new_user = customtkinter.CTkButton(master=self.r_frame,text="Create User",font=text_font,command=self.create_new_user)
+        new_user.place(x=470,y=12)
+
+        delete_user = customtkinter.CTkButton(master=self.r_frame,text="Delete User",font=text_font,command=lambda: save_changes(1))
+        delete_user.place(x=320,y=12)
         self.window.mainloop()
+    
+    def create_new_user(self):
+        new_window = customtkinter.CTkToplevel()
+        new_window.title("New User")
+        new_window.geometry("600x400")
+        new_window.resizable(width=False,height=False)
+        frame = customtkinter.CTkFrame(master=new_window,width=580,height=380)
+        frame.place(relx=0.5,rely=0.5,anchor=customtkinter.CENTER)
+        uentry_label = customtkinter.CTkLabel(master=frame,text="New Username:",font=self.text_font)
+        uentry_label.place(x=10,y=20)
+        uentry = customtkinter.CTkEntry(master=frame,placeholder_text="New Username",width=180,font=self.text_font)
+        uentry.place(x=10,y=50)
+        pentry_label = customtkinter.CTkLabel(master=frame,text="New Password:",font=self.text_font)
+        pentry_label.place(x=10,y=100)
+        password = customtkinter.CTkEntry(master=frame,placeholder_text="New Password",width=180,font=self.text_font)
+        password.place(x=10,y=130)
+        month_of_joining = customtkinter.CTkOptionMenu(master=frame,values=["January", "February", 'March', "April", "May", 'June', "July", "August", "September", "October", 'November' , "December"],font=self.text_font)
+        month_of_joining.place(x=360,y=130)
+        month_of_joining_label = customtkinter.CTkLabel(master=frame,text="Month of Joining:",font=self.text_font)
+        month_of_joining_label.place(x=360,y=100)
+
+        salary_basic_label = customtkinter.CTkLabel(master=frame,text="Set Basic Pay: ",font=self.text_font)
+        set_basic = customtkinter.CTkEntry(master=frame,placeholder_text="Set Basic Pay",font=self.text_font)
+        salary_basic_label.place(x=10,y=180)
+        set_basic.place(x=10,y=210)
+
+        set_acc_label = customtkinter.CTkLabel(master=frame,text="Account Number:",font=self.text_font)
+        set_acc = customtkinter.CTkEntry(master=frame,placeholder_text="Set Account Number",font=self.text_font,width=200)
+        set_acc_label.place(x=360,y=180)
+        set_acc.place(x=360,y=210)
+
+        set_name_label = customtkinter.CTkLabel(master=frame,text="User's Name:",font=self.text_font)
+        set_name = customtkinter.CTkEntry(master=frame,placeholder_text="Set User's name",width=200,font=self.text_font)
+        set_name_label.place(x=360,y=20)
+        set_name.place(x=360,y=50)
+
+        acc_number = customtkinter.CTkEntry(master=frame,placeholder_text="New Password",width=220,font=self.text_font)
+        acc_number.place(relx=20,y=180)
+        l_button = customtkinter.CTkButton(master=frame,width=220,text="Create User",corner_radius=6,command=lambda : self.check_entry(frame,password=password,username=uentry,acc=set_acc,basic=set_basic,
+        month=month_of_joining,name=set_name),font=self.text_font)
+        l_button.place(x=170,y=270)
+
+    def check_entry(self,frame:customtkinter.CTkFrame,**kwargs:customtkinter.CTkEntry):
+        password = kwargs["password"].get()
+        username = kwargs["username"].get()
+        basic = kwargs["basic"].get()
+        name = kwargs["name"].get()
+        acc_number = kwargs["acc"].get()
+        starting_month = kwargs["month"].get()
+        create_attendance = lambda:[0 for _ in range(["January", "February", 'March', "April", "May", 'June', "July", "August", "September", "October", 'November' , "December"].index(starting_month))]
+
+        if password == "" or username == "" or basic == "" or name == "" or acc_number == "":
+            ...
+        elif username in data["users"].keys():
+            ...
+        else:
+            data["users"][username] = {"password":password,
+                                        "basic":int(basic),
+                                        "name":name,
+                                        "acc":int(acc_number),  
+                                        "attendance":create_attendance()  
+                                        }
+            with open("../sample.json","w") as file:
+                json.dump(data,file,indent=4)
     
 user = Users()
 user.login_page()
