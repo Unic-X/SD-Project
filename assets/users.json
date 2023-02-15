@@ -6,7 +6,7 @@
             "password": "arman22012",
             "attendance": [
                 31,
-                15,
+                9,
                 17,
                 28,
                 19,
@@ -41,7 +41,7 @@
             ],
             "isadmin": true,
             "acc": 313091178639,
-            "basic": 25000
+            "basic": 200000
         },
         "user3": {
             "name": "Alo",

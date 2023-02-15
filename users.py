@@ -5,6 +5,7 @@ import matplotlib, numpy
 matplotlib.use('TkAgg')
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+from tkinter import filedialog
 
 os.chdir("assets/")
 
@@ -54,6 +55,23 @@ class Users:
         frame.l_button.place(relx=0.2,y=250)
         frame.mainloop()
 
+    def print(self):
+
+        name = data["users"][self.username]["name"]
+        basic = data["users"][self.username]["basic"]
+        ID  = self.username
+        acc = data["users"][self.username]["acc"]
+        com_allowance = basic*0.16
+        da=basic*0.38
+        perks = basic*0.252
+        cpf = basic*0.06
+        taxable = basic+basic*0.792
+        total_tax = taxable*0.3
+        folder_selected = filedialog.askdirectory()
+        print(folder_selected)
+        samosa(folder_selected,x=name,da=da,basic=basic,perks=perks,empID=ID,tax=total_tax,epf=cpf,acc_number = acc,com_allow = com_allowance)
+
+
     def home_page(self,i=0):
         #Define window of the page
         self.window.title("Employee Payroll")
@@ -86,7 +104,7 @@ class Users:
         self.window.but_emp.place(y=100)
 
         #Added DEDUCTION button
-        self.window.but_deduction = customtkinter.CTkButton(master=self.l_frame,width=220,height=40,text="Deduction",corner_radius=0,fg_color="#333333",hover_color="#2e2e2e",image=customtkinter.CTkImage(Image.open("documents-solid.png")))
+        self.window.but_deduction = customtkinter.CTkButton(master=self.l_frame,width=220,height=40,text="Pay History",corner_radius=0,fg_color="#333333",hover_color="#2e2e2e",image=customtkinter.CTkImage(Image.open("documents-solid.png")),command=self.pay_history)
         self.window.but_deduction.place(y=140)
 
         #Added Printables label
@@ -94,8 +112,10 @@ class Users:
         self.window.printables.place(y=185,relx=0.1)
 
         #Added PAYROLL button
-        self.window.but_payroll = customtkinter.CTkButton(master=self.l_frame,width=220,height=40,text="Payroll   ",corner_radius=0,fg_color="#333333",hover_color="#2e2e2e",image=customtkinter.CTkImage(Image.open("coins-solid.png")))
+        self.window.but_payroll = customtkinter.CTkButton(master=self.l_frame,width=220,height=40,text="Payroll   ",corner_radius=0,fg_color="#333333",hover_color="#2e2e2e",image=customtkinter.CTkImage(Image.open("coins-solid.png")),command=self.print)
         self.window.but_payroll.place(y=215)
+
+
 
         #Added SCHEDULE button
         #self.window.but_schedule = customtkinter.CTkButton(master=self.l_frame,width=220,height=40,text="Schedule",corner_radius=0,fg_color="#333333",hover_color="#2e2e2e",image=customtkinter.CTkImage(Image.open("clock-solid.png")))
@@ -192,6 +212,15 @@ class Users:
         if i==0:
             self.window.mainloop()
 
+    def pay_history(self):
+        self.r_frame.destroy()
+
+        #Create a new window with the same name
+        
+        self.r_frame = customtkinter.CTkFrame(master=self.window)
+        self.r_frame.grid(row=0,column=1,rowspan=4,padx=20,pady=20,sticky="nsew")
+        
+
     def attendace(self):
         self.r_frame.destroy()
 
@@ -211,7 +240,7 @@ class Users:
         
         attendance_graph.grid(row=1,column=0,padx=7.5,pady=20,sticky="nsew",columnspan=4) 
 
-        f = Figure(figsize=(10,20), dpi=100,facecolor="#2a2b2a",)
+        f = Figure(figsize=(10,20), dpi=100,facecolor="#2a2b2a")
         ax = f.add_subplot(111)
         ax.set_facecolor("orange")
         ax.set_xlabel('X-axis')
@@ -224,7 +253,8 @@ class Users:
         data_ = tuple(data["users"][self.username]["attendance"])
         ind = numpy.arange(len(data_))  # the x locations for the groups
         width = .75
-        ax.set_xticklabels(["January", "February", 'March', "April", "May", 'June', "July", "August", "September", "October", 'November' , "December"])
+        ax.set_xticks([0,1,2,3,4,5,6,7,8,9,10,11],["January", "February", 'March', "April", "May", 'June', "July", "August", "September", "October", 'November' , "December"])
+        ax.set_xticklabels(["January", "February", 'March', "April", "May", 'June', "July", "August", "September", "October", 'November' , "December"],rotation=30)
         rects1 = ax.bar(ind, data_, width)
 
         canvas = FigureCanvasTkAgg(f, master=attendance_graph)
