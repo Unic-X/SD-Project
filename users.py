@@ -23,7 +23,6 @@ class Users:
         else:
             real_password = data["users"][username]["password"]
             if password == real_password:
-                print("Correct login")
                 if data["users"][username]["isadmin"] == True:
                     frame.destroy()
                     user=Admin(self.window,username)
@@ -68,7 +67,6 @@ class Users:
         taxable = basic+basic*0.792
         total_tax = taxable*0.3
         folder_selected = filedialog.askdirectory()
-        print(folder_selected)
         samosa(folder_selected,x=name,da=da,basic=basic,perks=perks,empID=ID,tax=total_tax,epf=cpf,acc_number = acc,com_allow = com_allowance)
 
 
@@ -278,8 +276,6 @@ class Users:
         canvas.get_tk_widget().pack(side=customtkinter.TOP, fill=customtkinter.BOTH, expand=1)
 
     def change_password(self):
-        print(self.username)
-        print(data["users"][self.username]["password"])
         #UI Element
         self.top_level = customtkinter.CTkToplevel()
         self.top_level.title("Change Password")
@@ -292,7 +288,7 @@ class Users:
         self.top_l_frame .place(relx=0.5,rely=0.5,anchor=customtkinter.CENTER)
 
         label_1 = customtkinter.CTkLabel(master=self.top_l_frame ,text="Change Password",font=("Century Gothic",20))
-        label_1.place(x=70,y=10)
+        label_1.place(x=80,y=10)
 
         current_password_label = customtkinter.CTkLabel(master=self.top_l_frame ,text="Current Password")
         current_password_label.place(relx=0.2,y=70)
@@ -318,7 +314,9 @@ class Users:
         
         #Check if current password is right
     def check_entered_pass(self,uentry,uentry2,uentry3):
-        if (data["users"][self.username]["password"] == uentry.get().strip())and (uentry2.get()==uentry3.get()):
+        pass1 = uentry2.get()
+        pass2 = uentry3.get()
+        if (data["users"][self.username]["password"] == uentry.get().strip())and (pass1==pass2):
             self.top_l_frame.destroy()
             self.top_l_frame2 = customtkinter.CTkFrame(master=self.top_level,height=360,width=360,corner_radius=15)
             self.top_l_frame2.place(relx=0.5,rely=0.5,anchor=customtkinter.CENTER)
@@ -327,8 +325,14 @@ class Users:
             image_frame = customtkinter.CTkLabel(master=self.top_l_frame2,image=password_changed_image,text="")
             image_frame.place(relx=0.4,rely=0.5)
             valid_pass.place(relx=0.25,rely=0.3)
+            
+            data["users"][self.username]["password"] = pass1
+            with open("users.json","w") as file:
+                    json.dump(data,file,indent=4)
         else:
-            ...
+            invalid_pass = customtkinter.CTkLabel(master=self.top_l_frame,text="Invalid Password Try again",text_color="Red",font=("Century Gothic",20))
+            invalid_pass.place(relx=0.15,rely=0.1)
+
 class Admin(Users):
     def __init__(self,window,username):
         self.window = window
@@ -395,6 +399,7 @@ class Admin(Users):
             with open("users.json","w") as file:
                     json.dump(data,file,indent=4)
             list_users.configure(values=[username for username in data["users"].keys()])
+            option_callback(employeeid)
 
         def confirmation_window():
 
@@ -435,7 +440,6 @@ class Admin(Users):
         current_basic_label = customtkinter.CTkLabel(master=manage_users_frame,text="Current Basic:",font=text_font)
         current_basic_label.place(x=350,y=140)
         basic = data["users"][self.username]
-        print(basic)
         current_basic = customtkinter.CTkLabel(master=manage_users_frame,text="0000",font=text_font,bg_color="#202120",corner_radius=20)
         current_basic.place(x=460,y=140)
         #CALCULATED DA
@@ -574,7 +578,6 @@ class Admin(Users):
         acc_number = kwargs["acc"].get()
         starting_month = kwargs["month"].get()
         create_attendance = lambda:[0 for _ in range(["January", "February", 'March', "April", "May", 'June', "July", "August", "September", "October", 'November' , "December"].index(starting_month))]
-
         if password == "" or username == "" or basic == "" or name == "" or acc_number == "":
             ...
         elif username in data["users"].keys():
@@ -584,10 +587,10 @@ class Admin(Users):
                                         "basic":int(basic),
                                         "name":name,
                                         "acc":int(acc_number),  
-                                        "attendance":create_attendance()  
+                                        "attendance":create_attendance() ,
+                                        "acc_history":[None]*len(create_attendance()) 
                                         }
-            with open("../sample.json","w") as file:
+            with open("users.json","w") as file:
                 json.dump(data,file,indent=4)
-    
 user = Users()
 user.login_page()
