@@ -183,7 +183,6 @@ class Users:
         basic = int(data["users"][self.username]["basic"])
         taxable = basic+basic*0.792
         net_pay = (basic+basic*0.792)-(taxable*0.3+basic*0.06)
-        print(net_pay)
         #Late Frame Right most
         total_pay_f = customtkinter.CTkFrame(master=self.r_frame,fg_color="#e85832",corner_radius=0)
         total_pay_f.grid(row=1,column=3,sticky="new")
@@ -214,11 +213,28 @@ class Users:
 
     def pay_history(self):
         self.r_frame.destroy()
-
-        #Create a new window with the same name
-        
         self.r_frame = customtkinter.CTkFrame(master=self.window)
+        self.r_frame.grid_columnconfigure((0,1,2,3),weight=1)
+        self.r_frame.grid_rowconfigure(1,weight=1)
         self.r_frame.grid(row=0,column=1,rowspan=4,padx=20,pady=20,sticky="nsew")
+        attendance = customtkinter.CTkLabel(master=self.r_frame,text="Pay History")
+        attendance.configure(padx=20,font=self.text_font_bold)
+        attendance.grid(row=0,column=0,padx=7.5,pady=20,sticky="nw")
+
+        attendance_graph = customtkinter.CTkFrame(master=self.r_frame)
+        attendance_graph.grid(row=1,column=0,padx=7.5,pady=20,sticky="nsew",columnspan=4) 
+        y_coord = 60
+        customtkinter.CTkLabel(master=attendance_graph,text=f"Month of Payment    :    Net Pay",font=customtkinter.CTkFont("Proxima Nova Rg",18,'bold')).place(x=50,y=20)
+        months = ["January", "February", 'March', "April", "May", 'June', "July", "August", "September", "October", 'November' , "December"]
+        for i in range(len(data["users"][self.username]["pay_record"])):
+            monthly_pay = data["users"][self.username]["pay_record"][i]
+            month = months[i]
+            if monthly_pay!=None:
+                a = customtkinter.CTkLabel(master=attendance_graph,text=f"{month}   :  {monthly_pay}",font=self.text_font)
+                a.place(x=50,y=y_coord)
+                y_coord+=40
+                
+        cummulative = customtkinter.CTkLabel(master=attendance_graph,text=f"Month of Payment    :    Net Pay",font=customtkinter.CTkFont("Proxima Nova Rg",18,'bold')).place(x=50,y=20)
         
 
     def attendace(self):
@@ -249,7 +265,6 @@ class Users:
         ax.tick_params(axis='x', colors='white')
         ax.yaxis.label.set_color('white')
         ax.tick_params(axis='y', colors='white')
-        print(tuple(data["users"][self.username]["attendance"]))
         data_ = tuple(data["users"][self.username]["attendance"])
         ind = numpy.arange(len(data_))  # the x locations for the groups
         width = .75
@@ -303,13 +318,7 @@ class Users:
         
         #Check if current password is right
     def check_entered_pass(self,uentry,uentry2,uentry3):
-        pattern = r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$'
-        match_password = re.match(pattern, uentry2.get())
-        print(uentry2.get()==uentry3.get())
-        print(match_password!=None)
-        print(data["users"][self.username]["password"].strip() == uentry.get().strip())
-        if (data["users"][self.username]["password"] == uentry.get().strip()) and (match_password!=None) and (uentry2.get()==uentry3.get()):
-            print("hi")
+        if (data["users"][self.username]["password"] == uentry.get().strip())and (uentry2.get()==uentry3.get()):
             self.top_l_frame.destroy()
             self.top_l_frame2 = customtkinter.CTkFrame(master=self.top_level,height=360,width=360,corner_radius=15)
             self.top_l_frame2.place(relx=0.5,rely=0.5,anchor=customtkinter.CENTER)
@@ -495,6 +504,8 @@ class Admin(Users):
         working_days= customtkinter.CTkLabel(master=manage_users_frame,text="0",font=font)
         working_days.place(x=145,y=440)
 
+       
+
         #NET SALARY
         net_salary_label = customtkinter.CTkLabel(master=manage_users_frame,text="Net Salary:",font=text_font)
         net_salary_label.place(x=190,y=440)
@@ -503,6 +514,9 @@ class Admin(Users):
 
         save_button = customtkinter.CTkButton(master=manage_users_frame,text="Save Changes",font=font,fg_color="#4b873a",command=lambda : confirmation_window())
         save_button.place(x=440,y=440)
+
+        current_month = customtkinter.CTkButton(master=self.r_frame,text="{}".format(datetime.datetime.now().strftime("%B")),font=text_font,state="disabled")
+        current_month.place(x=170,y=12)
 
         new_user = customtkinter.CTkButton(master=self.r_frame,text="Create User",font=text_font,command=self.create_new_user)
         new_user.place(x=470,y=12)

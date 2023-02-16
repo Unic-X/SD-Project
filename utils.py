@@ -203,11 +203,11 @@ def samosa(location,**kwargs):
     pdf.add_page()
     pdf.set_font("Times", size=10)
 
-    create_table(table_data = data,title='INVOICE      NAME: {}'.format(x), cell_width='even')
+    create_table(table_data = data,title='PAYSLIP      NAME: {}'.format(x), cell_width='even')
     pdf.ln()
 
     pdf.cell(94, 0, f'GROSS PAY :   {gross}',)
     pdf.cell(0,0,f"TOTAL DEDUCTION :   {total_deduction}")
     pdf.ln(7)
     pdf.cell(0,0,f"NET PAY : {gross-total_deduction}")
-    pdf.output(rf"{location}/Invoice.pdf")
+    pdf.output(rf"{location}/Payslip.pdf")
