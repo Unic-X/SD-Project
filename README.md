@@ -11,3 +11,8 @@ Project under Dr. Anirban Bhowal of the course Software Development.
 > PDF generator uses FPDF library 
 
 > Attendance is plotted using matplotlib
+
+## To build just install the requirements.txt file using pip
+```bash
+pip install -r requirements. txt 
+```
