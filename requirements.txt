@@ -1,4 +1,6 @@
 customtkinter==5.1.2
+fpdf==1.7.2
+fpdf2==2.6.1
 matplotlib==3.6.3
 numpy==1.24.1
 Pillow==9.4.0
